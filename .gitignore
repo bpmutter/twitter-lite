@@ -1,0 +1,5 @@
+twitter-lite-frontend/node_modules
+twitter-lite-backend/node_modules
+twitter-lite-frontend/.env
+twitter-lite-backend/.env
+

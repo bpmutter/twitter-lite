@@ -1,0 +1,11 @@
+extends layout
+
+block content
+    .errors-container
+    form(class="create-form")
+        .form-group
+            label(for='name') Task name
+            input#name.form-control(type='text', name="name", placeholder='Task name')
+        button.btn.btn-primary(type='submit') Create Task
+
+    script(src="js/create.js")
