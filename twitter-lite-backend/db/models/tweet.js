@@ -4,7 +4,10 @@ module.exports = (sequelize, DataTypes) => {
     message: DataTypes.STRING
   }, {});
   Tweet.associate = function(models) {
-    // associations can be defined here
+     Tweet.belongsTo(models.User, {
+       as: "user",
+       foreignKey: "userId",
+     });
   };
   return Tweet;
 };
