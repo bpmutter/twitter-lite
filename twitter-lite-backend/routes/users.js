@@ -6,7 +6,7 @@ const {
     handleValidationErrors
 } = require('./utils');
 const bcrypt = require('bcryptjs');
-const {User} = require('../db/models');
+const {User, Tweet} = require('../db/models');
 const {getUserToken, requireAuth} = require('../auth');
 
 const validateUsername =
@@ -36,6 +36,19 @@ const validateCreateUser = [
     handleValidationErrors
 ]
 
+router.get("/:id(\\d+)/tweets", asyncHandler(async (req, res) => {
+    console.log("hiii")
+    const userId = parseInt(req.params.id, 10);
+    const tweets = await Tweet.findAll({
+        where: {
+            userId
+        }
+    });
+    res.json({
+        tweets
+    });
+}))
+
 router.post('/', validateCreateUser, asyncHandler ( async (req, res) => {
     const {email, password, username} = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -48,9 +61,10 @@ router.post('/', validateCreateUser, asyncHandler ( async (req, res) => {
     res.status(201).json({user: {id: user.id}, token });     
 }));
 
-router.post("/token", validateCreateUser, asyncHandler(async (req, res, next)=>{
+router.post("/token", asyncHandler(async (req, res, next)=>{
     const {email, password} = req.body;
     const user = await User.findOne({where: { email }});
+    console.log(user);
     if (!user || !user.validatePassword(password)) {
         const err = new Error("Login failed");
         err.status = 401;

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {Tweet} = require("../db/models");
+const {Tweet, User} = require("../db/models");
 const {check, validationResult} = require('express-validator');
 const {
     asyncHandler,
@@ -18,7 +18,11 @@ const validateTweet = [
 ];
 
 router.get("/", asyncHandler(async(req, res) => {
-    const tweets = await Tweet.findAll();
+    const tweets = await Tweet.findAll({
+        include: [{ model: User, as: "user", attributes: ["username"] }],
+        order: [["createdAt", "DESC"]],
+        attributes: ["message"],
+    });
     res.json({tweets});
 }));
 
@@ -30,12 +34,15 @@ router.get("/:id(\\d+)", asyncHandler(async (req, res) => {
     });
 }));
 
+
 router.post("/", validateTweet, handleValidationErrors, asyncHandler(async (req, res) => {
     const newTweet = await Tweet.create({
         message: req.body.message,
+        userId: req.user.id,
         createdAt: new Date(),
         updatedAt: new Date(),
     });
+    console.log(newTweet)
     
     res.json({newTweet});
     // res.redirect('/')
@@ -63,7 +70,8 @@ router.delete("/:id(\\d+)",
 
         const deletedTweet = await tweet.destroy();
 
-        res.json({msg: "wassup ",deletedTweet});
-    }));
+        res.json({msg: "bye tweet!",deletedTweet});
+}));
+
 
 module.exports = router;
